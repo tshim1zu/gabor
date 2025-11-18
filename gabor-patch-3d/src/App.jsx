@@ -11,23 +11,50 @@ function App() {
   const [sigma, setSigma] = useState(0.3)
   const [orientation, setOrientation] = useState(0.0)
   const [animate, setAnimate] = useState(true)
+  const [panelVisible, setPanelVisible] = useState(true)
 
   return (
     <div style={{ width: '100vw', height: '100vh', background: '#1a1a1a' }}>
-      <div style={{
-        position: 'absolute',
-        top: 20,
-        left: 20,
-        zIndex: 100,
-        background: 'rgba(0, 0, 0, 0.95)',
-        padding: '20px',
-        borderRadius: '10px',
-        color: 'white',
-        fontFamily: 'monospace',
-        maxWidth: '300px',
-        border: '2px solid rgba(255, 255, 255, 0.2)',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.8)'
-      }}>
+      {/* トグルボタン */}
+      <button
+        onClick={() => setPanelVisible(!panelVisible)}
+        style={{
+          position: 'absolute',
+          top: 20,
+          left: 20,
+          zIndex: 101,
+          background: 'rgba(0, 0, 0, 0.8)',
+          border: '2px solid rgba(255, 255, 255, 0.3)',
+          borderRadius: '8px',
+          color: 'white',
+          padding: '12px 16px',
+          cursor: 'pointer',
+          fontSize: '14px',
+          fontWeight: 'bold',
+          transition: 'all 0.2s'
+        }}
+        onMouseEnter={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
+        onMouseLeave={(e) => e.target.style.background = 'rgba(0, 0, 0, 0.8)'}
+      >
+        {panelVisible ? '✕ 閉じる' : '☰ 設定'}
+      </button>
+
+      {/* 設定パネル */}
+      {panelVisible && (
+        <div style={{
+          position: 'absolute',
+          top: 70,
+          left: 20,
+          zIndex: 100,
+          background: 'rgba(0, 0, 0, 0.95)',
+          padding: '20px',
+          borderRadius: '10px',
+          color: 'white',
+          fontFamily: 'monospace',
+          maxWidth: '300px',
+          border: '2px solid rgba(255, 255, 255, 0.2)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.8)'
+        }}>
         <h2 style={{ marginTop: 0, fontSize: '18px' }}>3D Gabor Patch</h2>
         <p style={{ fontSize: '12px', marginBottom: '15px' }}>
           両眼視差による3Dガボールパッチ
@@ -122,7 +149,8 @@ function App() {
           )}
           <p>マウスでカメラ操作可能</p>
         </div>
-      </div>
+        </div>
+      )}
 
       <Canvas
         camera={{ position: [0, 0, 5], fov: 50 }}
