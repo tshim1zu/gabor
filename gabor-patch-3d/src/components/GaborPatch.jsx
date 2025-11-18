@@ -14,10 +14,12 @@ export default function GaborPatch({
   phase = 0.0,          // 位相
   orientation = 0.0,    // 向き（ラジアン）
   animate = true,       // アニメーション有効化
-  animationSpeed = 1.0  // アニメーション速度
+  animationSpeed = 1.0, // アニメーション速度
+  exerciseMode = false  // エクササイズモード（毛様筋トレーニング）
 }) {
   const meshRef = useRef()
   const materialRef = useRef()
+  const basePosition = useRef(position)
 
   // カスタムシェーダーマテリアル
   const shaderMaterial = useMemo(() => {
@@ -98,10 +100,35 @@ export default function GaborPatch({
       materialRef.current.uniforms.uTime.value = state.clock.elapsedTime
     }
 
-    // ゆっくり回転
-    if (meshRef.current && animate) {
-      meshRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.3
-      meshRef.current.rotation.x = Math.cos(state.clock.elapsedTime * 0.2) * 0.2
+    if (meshRef.current) {
+      if (exerciseMode) {
+        // エクササイズモード: 毛様筋トレーニング
+        const t = state.clock.elapsedTime
+
+        // 前後運動（Z軸）- 毛様筋のストレッチ（遠近調整）
+        // ゆっくり大きく動かして、目のピント調整を促す
+        const depthMovement = Math.sin(t * 0.4) * 3.0
+
+        // 左右運動（X軸）- 眼球追従運動
+        const horizontalMovement = Math.sin(t * 0.5 + Math.PI / 3) * 1.5
+
+        // 上下運動（Y軸）- 眼球追従運動
+        const verticalMovement = Math.cos(t * 0.35 + Math.PI / 6) * 1.0
+
+        meshRef.current.position.set(
+          basePosition.current[0] + horizontalMovement,
+          basePosition.current[1] + verticalMovement,
+          basePosition.current[2] + depthMovement
+        )
+
+        // エクササイズモード時は回転を抑える
+        meshRef.current.rotation.y = Math.sin(t * 0.2) * 0.1
+        meshRef.current.rotation.x = Math.cos(t * 0.15) * 0.1
+      } else if (animate) {
+        // 通常のアニメーション: ゆっくり回転
+        meshRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.3
+        meshRef.current.rotation.x = Math.cos(state.clock.elapsedTime * 0.2) * 0.2
+      }
     }
   })
 

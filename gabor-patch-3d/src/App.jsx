@@ -12,6 +12,26 @@ function App() {
   const [orientation, setOrientation] = useState(0.0)
   const [animate, setAnimate] = useState(true)
   const [panelVisible, setPanelVisible] = useState(true)
+  const [eyeSeparation, setEyeSeparation] = useState(0.064)
+  const [exerciseMode, setExerciseMode] = useState(false)
+  const [preset, setPreset] = useState('default')
+
+  // プリセット定義
+  const presets = {
+    default: { frequency: 5.0, sigma: 0.3, orientation: 0.0 },
+    fine: { frequency: 10.0, sigma: 0.2, orientation: Math.PI / 4 },
+    coarse: { frequency: 3.0, sigma: 0.5, orientation: Math.PI / 6 },
+    vertical: { frequency: 7.0, sigma: 0.25, orientation: Math.PI / 2 },
+    diagonal: { frequency: 6.0, sigma: 0.35, orientation: Math.PI / 3 }
+  }
+
+  const applyPreset = (presetName) => {
+    const p = presets[presetName]
+    setFrequency(p.frequency)
+    setSigma(p.sigma)
+    setOrientation(p.orientation)
+    setPreset(presetName)
+  }
 
   return (
     <div style={{ width: '100vw', height: '100vh', background: '#1a1a1a' }}>
@@ -77,6 +97,75 @@ function App() {
           >
             {stereoEnabled ? 'ON (左右分割)' : 'OFF'}
           </button>
+        </div>
+
+        {stereoEnabled && (
+          <div style={{ marginBottom: '15px' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
+              両眼間距離: {(eyeSeparation * 1000).toFixed(0)}mm
+            </label>
+            <input
+              type="range"
+              min="0.050"
+              max="0.080"
+              step="0.001"
+              value={eyeSeparation}
+              onChange={(e) => setEyeSeparation(parseFloat(e.target.value))}
+              style={{ width: '100%' }}
+            />
+            <p style={{ fontSize: '10px', margin: '5px 0 0 0', opacity: 0.7 }}>
+              画面が遠い場合は値を大きく
+            </p>
+          </div>
+        )}
+
+        <div style={{ marginBottom: '15px' }}>
+          <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
+            エクササイズモード（毛様筋トレーニング）
+          </label>
+          <button
+            onClick={() => setExerciseMode(!exerciseMode)}
+            style={{
+              padding: '8px 16px',
+              background: exerciseMode ? '#FF9800' : '#666',
+              border: 'none',
+              borderRadius: '5px',
+              color: 'white',
+              cursor: 'pointer'
+            }}
+          >
+            {exerciseMode ? 'ON (自動運動)' : 'OFF'}
+          </button>
+          {exerciseMode && (
+            <p style={{ fontSize: '10px', margin: '5px 0 0 0', opacity: 0.7 }}>
+              目で動きを追ってください
+            </p>
+          )}
+        </div>
+
+        <div style={{ marginBottom: '15px' }}>
+          <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
+            パターンプリセット
+          </label>
+          <select
+            value={preset}
+            onChange={(e) => applyPreset(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '8px',
+              background: '#333',
+              color: 'white',
+              border: '1px solid #666',
+              borderRadius: '5px',
+              cursor: 'pointer'
+            }}
+          >
+            <option value="default">標準</option>
+            <option value="fine">細かい縞模様</option>
+            <option value="coarse">粗い縞模様</option>
+            <option value="vertical">垂直</option>
+            <option value="diagonal">斜め</option>
+          </select>
         </div>
 
         <div style={{ marginBottom: '15px' }}>
@@ -168,6 +257,7 @@ function App() {
           orientation={orientation}
           animate={animate}
           animationSpeed={2.0}
+          exerciseMode={exerciseMode}
         />
 
         {/* 奥にもう一つ配置 */}
@@ -178,6 +268,7 @@ function App() {
           orientation={orientation + Math.PI / 4}
           animate={animate}
           animationSpeed={1.5}
+          exerciseMode={exerciseMode}
         />
 
         {/* 手前にもう一つ配置 */}
@@ -188,6 +279,7 @@ function App() {
           orientation={orientation - Math.PI / 6}
           animate={animate}
           animationSpeed={2.5}
+          exerciseMode={exerciseMode}
         />
 
         {/* グリッド（参照用） */}
@@ -218,7 +310,7 @@ function App() {
         {/* ステレオビュー */}
         {stereoEnabled && (
           <StereoView
-            eyeSeparation={0.064}
+            eyeSeparation={eyeSeparation}
             focalLength={5}
           />
         )}
