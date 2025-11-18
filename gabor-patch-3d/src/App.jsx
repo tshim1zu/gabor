@@ -20,6 +20,8 @@ function App() {
   const [exerciseMode, setExerciseMode] = useState(false)
   const [preset, setPreset] = useState('default')
   const [shapeType, setShapeType] = useState('gabor')
+  const [viewingDistance, setViewingDistance] = useState(0.3) // 30cm
+  const [screenWidthMM, setScreenWidthMM] = useState(340) // 13インチ相当
 
   // プリセット定義
   const presets = {
@@ -158,23 +160,89 @@ function App() {
         </div>
 
         {stereoEnabled && (
-          <div style={{ marginBottom: '15px' }}>
-            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
-              両眼間距離: {(eyeSeparation * 1000).toFixed(0)}mm
-            </label>
-            <input
-              type="range"
-              min="0.050"
-              max="0.080"
-              step="0.001"
-              value={eyeSeparation}
-              onChange={(e) => setEyeSeparation(parseFloat(e.target.value))}
-              style={{ width: '100%' }}
-            />
-            <p style={{ fontSize: '10px', margin: '5px 0 0 0', opacity: 0.7 }}>
-              画面が遠い場合は値を大きく
-            </p>
-          </div>
+          <>
+            <div style={{ marginBottom: '15px' }}>
+              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
+                視距離: {(viewingDistance * 100).toFixed(0)}cm
+              </label>
+              <input
+                type="range"
+                min="0.2"
+                max="0.6"
+                step="0.05"
+                value={viewingDistance}
+                onChange={(e) => setViewingDistance(parseFloat(e.target.value))}
+                style={{ width: '100%' }}
+              />
+              <p style={{ fontSize: '10px', margin: '5px 0 0 0', opacity: 0.7 }}>
+                目から画面までの距離
+              </p>
+            </div>
+
+            <div style={{ marginBottom: '15px' }}>
+              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
+                画面サイズ
+              </label>
+              <select
+                value={screenWidthMM}
+                onChange={(e) => setScreenWidthMM(parseInt(e.target.value))}
+                style={{
+                  width: '100%',
+                  padding: '8px',
+                  background: '#333',
+                  color: 'white',
+                  border: '1px solid #666',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                  marginBottom: '5px'
+                }}
+              >
+                <option value="286">13インチ (286mm)</option>
+                <option value="310">14インチ (310mm)</option>
+                <option value="340">15インチ (340mm)</option>
+                <option value="380">17インチ (380mm)</option>
+                <option value="531">24インチ (531mm)</option>
+                <option value="597">27インチ (597mm)</option>
+              </select>
+              <input
+                type="number"
+                placeholder="カスタム (mm)"
+                value={screenWidthMM}
+                onChange={(e) => setScreenWidthMM(parseInt(e.target.value) || 340)}
+                style={{
+                  width: '100%',
+                  padding: '8px',
+                  background: '#333',
+                  color: 'white',
+                  border: '1px solid #666',
+                  borderRadius: '5px',
+                  fontSize: '12px'
+                }}
+              />
+              <p style={{ fontSize: '10px', margin: '5px 0 0 0', opacity: 0.7 }}>
+                画面の横幅（mm単位）
+              </p>
+            </div>
+
+            <div style={{ marginBottom: '15px' }}>
+              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
+                両眼間距離: {(eyeSeparation * 1000).toFixed(0)}mm
+              </label>
+              <input
+                type="range"
+                min="0.050"
+                max="0.080"
+                step="0.001"
+                value={eyeSeparation}
+                onChange={(e) => setEyeSeparation(parseFloat(e.target.value))}
+                style={{ width: '100%' }}
+              />
+              <p style={{ fontSize: '10px', margin: '5px 0 0 0', opacity: 0.7 }}>
+                個人差により調整
+              </p>
+            </div>
+          </>
         )}
 
         <div style={{ marginBottom: '15px' }}>
@@ -371,6 +439,8 @@ function App() {
         {stereoEnabled && (
           <StereoView
             eyeSeparation={eyeSeparation}
+            viewingDistance={viewingDistance}
+            screenWidthMM={screenWidthMM}
             focalLength={5}
           />
         )}
