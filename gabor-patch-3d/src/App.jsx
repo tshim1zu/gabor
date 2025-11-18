@@ -41,17 +41,21 @@ function App() {
   }
 
   // パターンコンポーネントを返す関数
-  const renderPattern = (pos, freq, sig, orient, speed) => {
+  const renderPattern = (pos, freq, sig, orient, speed, index) => {
     const commonProps = {
       position: pos,
       animate: animate,
       exerciseMode: exerciseMode
     }
 
+    // keyにshapeTypeとindexを含めることで、図形タイプが変わったときに強制的に再マウント
+    const keyPrefix = `${shapeType}-${index}`
+
     switch (shapeType) {
       case 'gabor':
         return (
           <GaborPatch
+            key={keyPrefix}
             {...commonProps}
             frequency={freq}
             sigma={sig}
@@ -62,6 +66,7 @@ function App() {
       case 'dots':
         return (
           <DotPattern
+            key={keyPrefix}
             {...commonProps}
             dotCount={500}
             dotSize={0.03}
@@ -70,6 +75,7 @@ function App() {
       case 'concentric':
         return (
           <ConcentricPattern
+            key={keyPrefix}
             {...commonProps}
             ringCount={10}
           />
@@ -77,6 +83,7 @@ function App() {
       case 'checker':
         return (
           <CheckerPattern
+            key={keyPrefix}
             {...commonProps}
             gridSize={8}
           />
@@ -84,6 +91,7 @@ function App() {
       case 'radial':
         return (
           <RadialPattern
+            key={keyPrefix}
             {...commonProps}
             rayCount={16}
           />
@@ -402,13 +410,13 @@ function App() {
         <pointLight position={[10, 10, 10]} intensity={1} />
 
         {/* パターン（複数配置して奥行き感を出す） */}
-        {renderPattern([0, 0, 0], frequency, sigma, orientation, 2.0)}
+        {renderPattern([0, 0, 0], frequency, sigma, orientation, 2.0, 0)}
 
         {/* 奥にもう一つ配置 */}
-        {renderPattern([1.5, 0.5, -2], frequency * 0.7, sigma * 1.2, orientation + Math.PI / 4, 1.5)}
+        {renderPattern([1.5, 0.5, -2], frequency * 0.7, sigma * 1.2, orientation + Math.PI / 4, 1.5, 1)}
 
         {/* 手前にもう一つ配置 */}
-        {renderPattern([-1.5, -0.5, 2], frequency * 1.3, sigma * 0.8, orientation - Math.PI / 6, 2.5)}
+        {renderPattern([-1.5, -0.5, 2], frequency * 1.3, sigma * 0.8, orientation - Math.PI / 6, 2.5, 2)}
 
         {/* グリッド（参照用） */}
         <Grid

@@ -26,6 +26,18 @@ export default function GaborPatch({
     basePosition.current = position
   }, [position])
 
+  // パラメータが変更されたときuniformsを更新
+  useEffect(() => {
+    if (materialRef.current) {
+      materialRef.current.uniforms.uFrequency.value = frequency
+      materialRef.current.uniforms.uSigma.value = sigma
+      materialRef.current.uniforms.uPhase.value = phase
+      materialRef.current.uniforms.uOrientation.value = orientation
+      materialRef.current.uniforms.uAnimate.value = animate ? 1.0 : 0.0
+      materialRef.current.uniforms.uAnimationSpeed.value = animationSpeed
+    }
+  }, [frequency, sigma, phase, orientation, animate, animationSpeed])
+
   // カスタムシェーダーマテリアル
   const shaderMaterial = useMemo(() => {
     return {
