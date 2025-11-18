@@ -67,21 +67,22 @@ export default function StereoView({
     // 視距離に基づいてスケーリング
     const cameraOffset = halfEyeSep * (focalLength / viewingDistance)
 
-    // カメラ位置の更新
+    // カメラ位置と向きの更新
     leftCamera.current.position.copy(currentCamera.position)
     rightCamera.current.position.copy(currentCamera.position)
-
-    leftCamera.current.position.x -= cameraOffset
-    rightCamera.current.position.x += cameraOffset
-
-    // カメラの向きを更新
-    leftCamera.current.lookAt(currentCamera.position.x - cameraOffset, currentCamera.position.y, currentCamera.position.z - focalLength)
-    rightCamera.current.lookAt(currentCamera.position.x + cameraOffset, currentCamera.position.y, currentCamera.position.z - focalLength)
 
     leftCamera.current.rotation.copy(currentCamera.rotation)
     rightCamera.current.rotation.copy(currentCamera.rotation)
     leftCamera.current.quaternion.copy(currentCamera.quaternion)
     rightCamera.current.quaternion.copy(currentCamera.quaternion)
+
+    // 位置オフセットを適用（平行法: 両眼は同じ方向を向く）
+    leftCamera.current.position.x -= cameraOffset
+    rightCamera.current.position.x += cameraOffset
+
+    // 行列を更新
+    leftCamera.current.updateMatrixWorld()
+    rightCamera.current.updateMatrixWorld()
 
     // レンダラーをクリア
     renderer.clear()
