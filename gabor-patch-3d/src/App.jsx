@@ -135,270 +135,284 @@ function App() {
       {panelVisible && (
         <div style={{
           position: 'absolute',
-          top: 70,
-          left: 20,
+          bottom: 0,
+          left: 0,
+          right: 0,
           zIndex: 100,
           background: 'rgba(0, 0, 0, 0.95)',
           padding: '20px',
-          borderRadius: '10px',
           color: 'white',
           fontFamily: 'monospace',
-          maxWidth: '300px',
-          border: '2px solid rgba(255, 255, 255, 0.2)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.8)'
+          borderTop: '2px solid rgba(255, 255, 255, 0.2)',
+          boxShadow: '0 -8px 32px rgba(0, 0, 0, 0.8)',
+          maxHeight: '40vh',
+          overflowY: 'auto',
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '20px'
         }}>
-        <h2 style={{ marginTop: 0, fontSize: '18px' }}>3D Gabor Patch</h2>
-        <p style={{ fontSize: '12px', marginBottom: '15px' }}>
-          両眼視差による3Dガボールパッチ
-        </p>
-
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
-            ステレオビュー
-          </label>
-          <button
-            onClick={() => setStereoEnabled(!stereoEnabled)}
-            style={{
-              padding: '8px 16px',
-              background: stereoEnabled ? '#4CAF50' : '#666',
-              border: 'none',
-              borderRadius: '5px',
-              color: 'white',
-              cursor: 'pointer'
-            }}
-          >
-            {stereoEnabled ? 'ON (左右分割)' : 'OFF'}
-          </button>
+        <div style={{ flexBasis: '100%' }}>
+          <h2 style={{ marginTop: 0, fontSize: '18px', marginBottom: '5px' }}>3D Gabor Patch - 両眼視差による3Dガボールパッチ</h2>
         </div>
 
-        {stereoEnabled && (
-          <>
-            <div style={{ marginBottom: '15px' }}>
-              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
-                視距離: {(viewingDistance * 100).toFixed(0)}cm
-              </label>
-              <input
-                type="range"
-                min="0.2"
-                max="0.6"
-                step="0.05"
-                value={viewingDistance}
-                onChange={(e) => setViewingDistance(parseFloat(e.target.value))}
-                style={{ width: '100%' }}
-              />
-              <p style={{ fontSize: '10px', margin: '5px 0 0 0', opacity: 0.7 }}>
-                目から画面までの距離
-              </p>
-            </div>
+        {/* セクション1: ステレオ設定 */}
+        <div style={{ flex: '1 1 300px', minWidth: '250px' }}>
+          <h3 style={{ fontSize: '14px', marginBottom: '10px', borderBottom: '1px solid rgba(255,255,255,0.2)', paddingBottom: '5px' }}>ステレオ設定</h3>
 
-            <div style={{ marginBottom: '15px' }}>
-              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
-                画面サイズ
-              </label>
-              <select
-                value={screenWidthMM}
-                onChange={(e) => setScreenWidthMM(parseInt(e.target.value))}
-                style={{
-                  width: '100%',
-                  padding: '8px',
-                  background: '#333',
-                  color: 'white',
-                  border: '1px solid #666',
-                  borderRadius: '5px',
-                  cursor: 'pointer',
-                  fontSize: '12px',
-                  marginBottom: '5px'
-                }}
-              >
-                <option value="286">13インチ (286mm)</option>
-                <option value="310">14インチ (310mm)</option>
-                <option value="340">15インチ (340mm)</option>
-                <option value="380">17インチ (380mm)</option>
-                <option value="531">24インチ (531mm)</option>
-                <option value="597">27インチ (597mm)</option>
-              </select>
-              <input
-                type="number"
-                placeholder="カスタム (mm)"
-                value={screenWidthMM}
-                onChange={(e) => setScreenWidthMM(parseInt(e.target.value) || 340)}
-                style={{
-                  width: '100%',
-                  padding: '8px',
-                  background: '#333',
-                  color: 'white',
-                  border: '1px solid #666',
-                  borderRadius: '5px',
-                  fontSize: '12px'
-                }}
-              />
-              <p style={{ fontSize: '10px', margin: '5px 0 0 0', opacity: 0.7 }}>
-                画面の横幅（mm単位）
-              </p>
-            </div>
+          <div style={{ marginBottom: '15px' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
+              ステレオビュー
+            </label>
+            <button
+              onClick={() => setStereoEnabled(!stereoEnabled)}
+              style={{
+                padding: '8px 16px',
+                background: stereoEnabled ? '#4CAF50' : '#666',
+                border: 'none',
+                borderRadius: '5px',
+                color: 'white',
+                cursor: 'pointer'
+              }}
+            >
+              {stereoEnabled ? 'ON (左右分割)' : 'OFF'}
+            </button>
+          </div>
 
-            <div style={{ marginBottom: '15px' }}>
-              <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
-                両眼間距離: {(eyeSeparation * 1000).toFixed(0)}mm
-              </label>
-              <input
-                type="range"
-                min="0.050"
-                max="0.080"
-                step="0.001"
-                value={eyeSeparation}
-                onChange={(e) => setEyeSeparation(parseFloat(e.target.value))}
-                style={{ width: '100%' }}
-              />
-              <p style={{ fontSize: '10px', margin: '5px 0 0 0', opacity: 0.7 }}>
-                個人差により調整
-              </p>
-            </div>
-          </>
-        )}
+          {stereoEnabled && (
+            <>
+              <div style={{ marginBottom: '15px' }}>
+                <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
+                  視距離: {(viewingDistance * 100).toFixed(0)}cm
+                </label>
+                <input
+                  type="range"
+                  min="0.2"
+                  max="0.6"
+                  step="0.05"
+                  value={viewingDistance}
+                  onChange={(e) => setViewingDistance(parseFloat(e.target.value))}
+                  style={{ width: '100%' }}
+                />
+                <p style={{ fontSize: '10px', margin: '5px 0 0 0', opacity: 0.7 }}>
+                  目から画面までの距離
+                </p>
+              </div>
 
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
-            エクササイズモード（毛様筋トレーニング）
-          </label>
-          <button
-            onClick={() => setExerciseMode(!exerciseMode)}
-            style={{
-              padding: '8px 16px',
-              background: exerciseMode ? '#FF9800' : '#666',
-              border: 'none',
-              borderRadius: '5px',
-              color: 'white',
-              cursor: 'pointer'
-            }}
-          >
-            {exerciseMode ? 'ON (自動運動)' : 'OFF'}
-          </button>
-          {exerciseMode && (
-            <p style={{ fontSize: '10px', margin: '5px 0 0 0', opacity: 0.7 }}>
-              目で動きを追ってください
-            </p>
+              <div style={{ marginBottom: '15px' }}>
+                <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
+                  画面サイズ
+                </label>
+                <select
+                  value={screenWidthMM}
+                  onChange={(e) => setScreenWidthMM(parseInt(e.target.value))}
+                  style={{
+                    width: '100%',
+                    padding: '8px',
+                    background: '#333',
+                    color: 'white',
+                    border: '1px solid #666',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    marginBottom: '5px'
+                  }}
+                >
+                  <option value="286">13インチ (286mm)</option>
+                  <option value="310">14インチ (310mm)</option>
+                  <option value="340">15インチ (340mm)</option>
+                  <option value="380">17インチ (380mm)</option>
+                  <option value="531">24インチ (531mm)</option>
+                  <option value="597">27インチ (597mm)</option>
+                </select>
+                <input
+                  type="number"
+                  placeholder="カスタム (mm)"
+                  value={screenWidthMM}
+                  onChange={(e) => setScreenWidthMM(parseInt(e.target.value) || 340)}
+                  style={{
+                    width: '100%',
+                    padding: '8px',
+                    background: '#333',
+                    color: 'white',
+                    border: '1px solid #666',
+                    borderRadius: '5px',
+                    fontSize: '12px'
+                  }}
+                />
+                <p style={{ fontSize: '10px', margin: '5px 0 0 0', opacity: 0.7 }}>
+                  画面の横幅（mm単位）
+                </p>
+              </div>
+
+              <div style={{ marginBottom: '15px' }}>
+                <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
+                  両眼間距離: {(eyeSeparation * 1000).toFixed(0)}mm
+                </label>
+                <input
+                  type="range"
+                  min="0.050"
+                  max="0.080"
+                  step="0.001"
+                  value={eyeSeparation}
+                  onChange={(e) => setEyeSeparation(parseFloat(e.target.value))}
+                  style={{ width: '100%' }}
+                />
+                <p style={{ fontSize: '10px', margin: '5px 0 0 0', opacity: 0.7 }}>
+                  個人差により調整
+                </p>
+              </div>
+            </>
           )}
+
+          <div style={{ marginBottom: '15px' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
+              エクササイズモード（毛様筋トレーニング）
+            </label>
+            <button
+              onClick={() => setExerciseMode(!exerciseMode)}
+              style={{
+                padding: '8px 16px',
+                background: exerciseMode ? '#FF9800' : '#666',
+                border: 'none',
+                borderRadius: '5px',
+                color: 'white',
+                cursor: 'pointer'
+              }}
+            >
+              {exerciseMode ? 'ON (自動運動)' : 'OFF'}
+            </button>
+            {exerciseMode && (
+              <p style={{ fontSize: '10px', margin: '5px 0 0 0', opacity: 0.7 }}>
+                目で動きを追ってください
+              </p>
+            )}
+          </div>
+
+          <div style={{ marginBottom: '15px' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
+              図形タイプ
+            </label>
+            <select
+              value={shapeType}
+              onChange={(e) => setShapeType(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '8px',
+                background: '#333',
+                color: 'white',
+                border: '1px solid #666',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                fontSize: '12px'
+              }}
+            >
+              <option value="gabor">ガボールパッチ（縞模様）</option>
+              <option value="dots">ランダムドット</option>
+              <option value="concentric">同心円</option>
+              <option value="checker">チェッカーボード</option>
+              <option value="radial">放射状</option>
+            </select>
+          </div>
         </div>
 
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
-            図形タイプ
-          </label>
-          <select
-            value={shapeType}
-            onChange={(e) => setShapeType(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '8px',
-              background: '#333',
-              color: 'white',
-              border: '1px solid #666',
-              borderRadius: '5px',
-              cursor: 'pointer',
-              fontSize: '12px'
-            }}
-          >
-            <option value="gabor">ガボールパッチ（縞模様）</option>
-            <option value="dots">ランダムドット</option>
-            <option value="concentric">同心円</option>
-            <option value="checker">チェッカーボード</option>
-            <option value="radial">放射状</option>
-          </select>
+        {/* セクション2: パターン設定 */}
+        <div style={{ flex: '1 1 300px', minWidth: '250px' }}>
+          <h3 style={{ fontSize: '14px', marginBottom: '10px', borderBottom: '1px solid rgba(255,255,255,0.2)', paddingBottom: '5px' }}>パターン設定</h3>
+
+          <div style={{ marginBottom: '15px' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
+              パターンプリセット
+            </label>
+            <select
+              value={preset}
+              onChange={(e) => applyPreset(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '8px',
+                background: '#333',
+                color: 'white',
+                border: '1px solid #666',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                fontSize: '12px'
+              }}
+            >
+              <option value="default">標準</option>
+              <option value="fine">細かい縞模様</option>
+              <option value="coarse">粗い縞模様</option>
+              <option value="vertical">垂直</option>
+              <option value="diagonal">斜め</option>
+            </select>
+          </div>
+
+          <div style={{ marginBottom: '15px' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
+              空間周波数: {frequency.toFixed(1)}
+            </label>
+            <input
+              type="range"
+              min="1"
+              max="20"
+              step="0.1"
+              value={frequency}
+              onChange={(e) => setFrequency(parseFloat(e.target.value))}
+              style={{ width: '100%' }}
+            />
+          </div>
+
+          <div style={{ marginBottom: '15px' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
+              ガウス標準偏差: {sigma.toFixed(2)}
+            </label>
+            <input
+              type="range"
+              min="0.1"
+              max="1.0"
+              step="0.01"
+              value={sigma}
+              onChange={(e) => setSigma(parseFloat(e.target.value))}
+              style={{ width: '100%' }}
+            />
+          </div>
+
+          <div style={{ marginBottom: '15px' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
+              向き: {Math.round(orientation * 180 / Math.PI)}°
+            </label>
+            <input
+              type="range"
+              min="0"
+              max={Math.PI * 2}
+              step="0.01"
+              value={orientation}
+              onChange={(e) => setOrientation(parseFloat(e.target.value))}
+              style={{ width: '100%' }}
+            />
+          </div>
+
+          <div style={{ marginBottom: '15px' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
+              アニメーション
+            </label>
+            <button
+              onClick={() => setAnimate(!animate)}
+              style={{
+                padding: '8px 16px',
+                background: animate ? '#4CAF50' : '#666',
+                border: 'none',
+                borderRadius: '5px',
+                color: 'white',
+                cursor: 'pointer'
+              }}
+            >
+              {animate ? 'ON' : 'OFF'}
+            </button>
+          </div>
         </div>
 
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
-            パターンプリセット
-          </label>
-          <select
-            value={preset}
-            onChange={(e) => applyPreset(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '8px',
-              background: '#333',
-              color: 'white',
-              border: '1px solid #666',
-              borderRadius: '5px',
-              cursor: 'pointer'
-            }}
-          >
-            <option value="default">標準</option>
-            <option value="fine">細かい縞模様</option>
-            <option value="coarse">粗い縞模様</option>
-            <option value="vertical">垂直</option>
-            <option value="diagonal">斜め</option>
-          </select>
-        </div>
-
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
-            空間周波数: {frequency.toFixed(1)}
-          </label>
-          <input
-            type="range"
-            min="1"
-            max="20"
-            step="0.1"
-            value={frequency}
-            onChange={(e) => setFrequency(parseFloat(e.target.value))}
-            style={{ width: '100%' }}
-          />
-        </div>
-
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
-            ガウス標準偏差: {sigma.toFixed(2)}
-          </label>
-          <input
-            type="range"
-            min="0.1"
-            max="1.0"
-            step="0.01"
-            value={sigma}
-            onChange={(e) => setSigma(parseFloat(e.target.value))}
-            style={{ width: '100%' }}
-          />
-        </div>
-
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
-            向き: {Math.round(orientation * 180 / Math.PI)}°
-          </label>
-          <input
-            type="range"
-            min="0"
-            max={Math.PI * 2}
-            step="0.01"
-            value={orientation}
-            onChange={(e) => setOrientation(parseFloat(e.target.value))}
-            style={{ width: '100%' }}
-          />
-        </div>
-
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
-            アニメーション
-          </label>
-          <button
-            onClick={() => setAnimate(!animate)}
-            style={{
-              padding: '8px 16px',
-              background: animate ? '#4CAF50' : '#666',
-              border: 'none',
-              borderRadius: '5px',
-              color: 'white',
-              cursor: 'pointer'
-            }}
-          >
-            {animate ? 'ON' : 'OFF'}
-          </button>
-        </div>
-
-        {/* 背景設定 */}
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '15px', marginTop: '15px' }}>
-          <h3 style={{ fontSize: '14px', marginBottom: '10px' }}>背景設定</h3>
+        {/* セクション3: 背景設定 */}
+        <div style={{ flex: '1 1 300px', minWidth: '250px' }}>
+          <h3 style={{ fontSize: '14px', marginBottom: '10px', borderBottom: '1px solid rgba(255,255,255,0.2)', paddingBottom: '5px' }}>背景設定</h3>
 
           <div style={{ marginBottom: '15px' }}>
             <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
@@ -502,15 +516,15 @@ function App() {
               }}
             />
           </div>
-        </div>
 
-        <div style={{ fontSize: '11px', marginTop: '20px', opacity: 0.7 }}>
-          {stereoEnabled && (
-            <p>💡 平行法またはVRビューアーで立体視できます</p>
-          )}
-          <p>マウスでカメラ操作可能</p>
+          <div style={{ fontSize: '11px', marginTop: '20px', opacity: 0.7 }}>
+            {stereoEnabled && (
+              <p>💡 平行法またはVRビューアーで立体視できます</p>
+            )}
+            <p>マウスでカメラ操作可能</p>
+          </div>
         </div>
-        </div>
+      </div>
       )}
 
       <Canvas
@@ -590,45 +604,45 @@ function App() {
           </>
         )}
 
-        {/* 追加オブジェクト */}
+        {/* 追加オブジェクト（グリッドの上に配置） */}
         {backgroundObject === 'cube' && (
-          <mesh position={[0, -1, -5]} rotation={[0.5, 0.5, 0]}>
-            <boxGeometry args={[1, 1, 1]} />
+          <mesh position={[3, -1, 0]} rotation={[0.5, 0.5, 0]}>
+            <boxGeometry args={[1.5, 1.5, 1.5]} />
             <meshStandardMaterial color="#4a90e2" wireframe />
           </mesh>
         )}
 
         {backgroundObject === 'sphere' && (
-          <mesh position={[0, -1, -5]}>
-            <sphereGeometry args={[0.8, 32, 32]} />
+          <mesh position={[3, -0.8, 0]}>
+            <sphereGeometry args={[1, 32, 32]} />
             <meshStandardMaterial color="#4a90e2" wireframe />
           </mesh>
         )}
 
         {backgroundObject === 'torus' && (
-          <mesh position={[0, -1, -5]} rotation={[Math.PI / 4, 0, 0]}>
-            <torusGeometry args={[0.8, 0.3, 16, 32]} />
+          <mesh position={[3, -1, 0]} rotation={[Math.PI / 4, 0, 0]}>
+            <torusGeometry args={[1, 0.4, 16, 32]} />
             <meshStandardMaterial color="#4a90e2" wireframe />
           </mesh>
         )}
 
         {backgroundObject === 'cylinder' && (
-          <mesh position={[0, -1, -5]} rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[0.5, 0.5, 1.5, 32]} />
+          <mesh position={[3, -1.2, 0]} rotation={[0, 0, 0]}>
+            <cylinderGeometry args={[0.6, 0.6, 1.8, 32]} />
             <meshStandardMaterial color="#4a90e2" wireframe />
           </mesh>
         )}
 
         {backgroundObject === 'cone' && (
-          <mesh position={[0, -1, -5]} rotation={[0, 0, 0]}>
-            <coneGeometry args={[0.6, 1.5, 32]} />
+          <mesh position={[3, -1.5, 0]} rotation={[0, 0, 0]}>
+            <coneGeometry args={[0.7, 1.8, 32]} />
             <meshStandardMaterial color="#4a90e2" wireframe />
           </mesh>
         )}
 
         {backgroundObject === 'octahedron' && (
-          <mesh position={[0, -1, -5]}>
-            <octahedronGeometry args={[0.8]} />
+          <mesh position={[3, -1, 0]}>
+            <octahedronGeometry args={[1]} />
             <meshStandardMaterial color="#4a90e2" wireframe />
           </mesh>
         )}
