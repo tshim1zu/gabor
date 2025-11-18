@@ -67,6 +67,17 @@ export default function StereoView({
     // 視距離に基づいてスケーリング
     const cameraOffset = halfEyeSep * (focalLength / viewingDistance)
 
+    // デバッグ: オフセット値を確認
+    if (typeof window !== 'undefined' && !window._stereoDebugLogged) {
+      console.log('Stereo Debug Info:')
+      console.log('  Eye separation:', eyeSeparation * 1000, 'mm')
+      console.log('  Viewing distance:', viewingDistance * 100, 'cm')
+      console.log('  Screen width:', screenWidthMM, 'mm')
+      console.log('  Camera offset:', cameraOffset)
+      console.log('  Focal length:', focalLength)
+      window._stereoDebugLogged = true
+    }
+
     // カメラ位置と向きの更新
     leftCamera.current.position.copy(currentCamera.position)
     rightCamera.current.position.copy(currentCamera.position)
