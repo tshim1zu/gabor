@@ -1,4 +1,4 @@
-import { useRef, useMemo } from 'react'
+import { useRef, useMemo, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
@@ -20,6 +20,11 @@ export default function GaborPatch({
   const meshRef = useRef()
   const materialRef = useRef()
   const basePosition = useRef(position)
+
+  // positionが変更されたときbasePositionを更新
+  useEffect(() => {
+    basePosition.current = position
+  }, [position])
 
   // カスタムシェーダーマテリアル
   const shaderMaterial = useMemo(() => {
