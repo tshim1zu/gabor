@@ -10,6 +10,22 @@ import StereoView from './components/StereoView'
 import './App.css'
 
 function App() {
+  // ランダムな初期値を生成
+  const getRandomShapeType = () => {
+    const types = ['gabor', 'dots', 'concentric', 'checker', 'radial']
+    return types[Math.floor(Math.random() * types.length)]
+  }
+
+  const getRandomBackgroundObject = () => {
+    const objects = ['cube', 'sphere', 'torus', 'cylinder', 'cone', 'octahedron']
+    return objects[Math.floor(Math.random() * objects.length)]
+  }
+
+  const getRandomEnvironment = () => {
+    const envs = ['city', 'sunset', 'dawn', 'night', 'warehouse', 'forest', 'apartment', 'studio', 'park', 'lobby']
+    return envs[Math.floor(Math.random() * envs.length)]
+  }
+
   const [stereoEnabled, setStereoEnabled] = useState(true)
   const [frequency, setFrequency] = useState(5.0)
   const [sigma, setSigma] = useState(0.3)
@@ -19,12 +35,12 @@ function App() {
   const [eyeSeparation, setEyeSeparation] = useState(0.064)
   const [exerciseMode, setExerciseMode] = useState(false)
   const [preset, setPreset] = useState('default')
-  const [shapeType, setShapeType] = useState('gabor')
+  const [shapeType, setShapeType] = useState(getRandomShapeType())
   const [viewingDistance, setViewingDistance] = useState(0.3) // 30cm
   const [screenWidthMM, setScreenWidthMM] = useState(340) // 13インチ相当
   const [backgroundGrid, setBackgroundGrid] = useState('grid') // grid, none, dots, lines
-  const [environmentPreset, setEnvironmentPreset] = useState('city') // city, sunset, dawn, night, studio, etc.
-  const [backgroundObject, setBackgroundObject] = useState('none') // none, cube, sphere, torus, cylinder
+  const [environmentPreset, setEnvironmentPreset] = useState(getRandomEnvironment())
+  const [backgroundObject, setBackgroundObject] = useState(getRandomBackgroundObject())
   const [backgroundColor, setBackgroundColor] = useState('#1a1a1a')
 
   // プリセット定義
