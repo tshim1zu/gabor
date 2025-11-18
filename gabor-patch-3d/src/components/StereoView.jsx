@@ -18,6 +18,16 @@ export default function StereoView({
   const leftCamera = useRef()
   const rightCamera = useRef()
 
+  // autoClearを無効化してステレオレンダリングを制御
+  useEffect(() => {
+    const previousAutoClear = gl.autoClear
+    gl.autoClear = false
+
+    return () => {
+      gl.autoClear = previousAutoClear
+    }
+  }, [gl])
+
   useEffect(() => {
     // 左右のカメラを作成
     const aspect = (size.width / 2) / size.height
@@ -33,7 +43,7 @@ export default function StereoView({
     rightCamera.current = right
   }, [camera, size.width, size.height])
 
-  useFrame(() => {
+  useFrame(({ gl: renderer, scene: currentScene, camera: currentCamera, clock }) => {
     if (!leftCamera.current || !rightCamera.current) return
 
     const width = size.width
@@ -58,33 +68,39 @@ export default function StereoView({
     const cameraOffset = halfEyeSep * (focalLength / viewingDistance)
 
     // カメラ位置の更新
-    leftCamera.current.position.copy(camera.position)
-    rightCamera.current.position.copy(camera.position)
+    leftCamera.current.position.copy(currentCamera.position)
+    rightCamera.current.position.copy(currentCamera.position)
 
     leftCamera.current.position.x -= cameraOffset
     rightCamera.current.position.x += cameraOffset
 
     // カメラの向きを更新
-    leftCamera.current.lookAt(camera.position.x - cameraOffset, camera.position.y, camera.position.z - focalLength)
-    rightCamera.current.lookAt(camera.position.x + cameraOffset, camera.position.y, camera.position.z - focalLength)
+    leftCamera.current.lookAt(currentCamera.position.x - cameraOffset, currentCamera.position.y, currentCamera.position.z - focalLength)
+    rightCamera.current.lookAt(currentCamera.position.x + cameraOffset, currentCamera.position.y, currentCamera.position.z - focalLength)
 
-    leftCamera.current.rotation.copy(camera.rotation)
-    rightCamera.current.rotation.copy(camera.rotation)
-    leftCamera.current.quaternion.copy(camera.quaternion)
-    rightCamera.current.quaternion.copy(camera.quaternion)
+    leftCamera.current.rotation.copy(currentCamera.rotation)
+    rightCamera.current.rotation.copy(currentCamera.rotation)
+    leftCamera.current.quaternion.copy(currentCamera.quaternion)
+    rightCamera.current.quaternion.copy(currentCamera.quaternion)
+
+    // レンダラーをクリア
+    renderer.clear()
 
     // 左目の描画
-    gl.setScissorTest(true)
-    gl.setScissor(0, 0, width / 2, height)
-    gl.setViewport(0, 0, width / 2, height)
-    gl.render(scene, leftCamera.current)
+    renderer.setScissorTest(true)
+    renderer.setScissor(0, 0, width / 2, height)
+    renderer.setViewport(0, 0, width / 2, height)
+    renderer.render(currentScene, leftCamera.current)
 
     // 右目の描画
-    gl.setScissor(width / 2, 0, width / 2, height)
-    gl.setViewport(width / 2, 0, width / 2, height)
-    gl.render(scene, rightCamera.current)
+    renderer.setScissor(width / 2, 0, width / 2, height)
+    renderer.setViewport(width / 2, 0, width / 2, height)
+    renderer.render(currentScene, rightCamera.current)
 
-    gl.setScissorTest(false)
+    renderer.setScissorTest(false)
+
+    // 継続的なレンダリングを要求
+    renderer.resetState()
   }, 1) // 通常のレンダリングの後に実行
 
   return null
