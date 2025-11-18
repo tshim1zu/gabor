@@ -33,9 +33,8 @@ function App() {
   const [shapeType, setShapeType] = useState(getRandomShapeType())
   const [viewingDistance, setViewingDistance] = useState(0.3) // 30cm
   const [screenWidthMM, setScreenWidthMM] = useState(340) // 13インチ相当
-  const [backgroundGrid, setBackgroundGrid] = useState('grid') // grid, none, dots, lines
   const [backgroundObject, setBackgroundObject] = useState(getRandomBackgroundObject())
-  const [backgroundColor, setBackgroundColor] = useState('#1a1a1a')
+  const [backgroundColor, setBackgroundColor] = useState('#000000')
 
   // プリセット定義
   const presets = {
@@ -426,31 +425,6 @@ function App() {
 
           <div style={{ marginBottom: '15px' }}>
             <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
-              背景グリッド
-            </label>
-            <select
-              value={backgroundGrid}
-              onChange={(e) => setBackgroundGrid(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '8px',
-                background: '#333',
-                color: 'white',
-                border: '1px solid #666',
-                borderRadius: '5px',
-                cursor: 'pointer',
-                fontSize: '12px'
-              }}
-            >
-              <option value="grid">グリッド</option>
-              <option value="dots">ドット</option>
-              <option value="lines">ライン</option>
-              <option value="none">なし</option>
-            </select>
-          </div>
-
-          <div style={{ marginBottom: '15px' }}>
-            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
               追加オブジェクト
             </label>
             <select
@@ -514,117 +488,90 @@ function App() {
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 10, 10]} intensity={1} />
 
-        {/* パターン（複数配置して奥行き感を出す） */}
-        {renderPattern([0, 0, 0], frequency, sigma, orientation, 2.0, 0)}
+        {/* 3D空間にパターンを敷き詰める */}
+        {Array.from({ length: 5 }).map((_, x) =>
+          Array.from({ length: 3 }).map((_, y) =>
+            Array.from({ length: 5 }).map((_, z) => {
+              const index = x * 15 + y * 5 + z
+              const position = [
+                (x - 2) * 2.5,  // X: -5 to 5
+                (y - 1) * 2.5,  // Y: -2.5 to 2.5
+                (z - 2) * 2.5   // Z: -5 to 5
+              ]
 
-        {/* 奥にもう一つ配置 */}
-        {renderPattern([1.5, 0.5, -2], frequency * 0.7, sigma * 1.2, orientation + Math.PI / 4, 1.5, 1)}
+              // ランダムなバリエーション
+              const freqVariation = frequency * (0.5 + Math.random())
+              const sigmaVariation = sigma * (0.7 + Math.random() * 0.6)
+              const orientVariation = Math.random() * Math.PI * 2
+              const speedVariation = 1.0 + Math.random() * 2.0
 
-        {/* 手前にもう一つ配置 */}
-        {renderPattern([-1.5, -0.5, 2], frequency * 1.3, sigma * 0.8, orientation - Math.PI / 6, 2.5, 2)}
-
-        {/* 背景グリッド */}
-        {backgroundGrid === 'grid' && (
-          <Grid
-            args={[10, 10]}
-            position={[0, -2, 0]}
-            cellSize={0.5}
-            cellThickness={0.5}
-            cellColor={'#6f6f6f'}
-            sectionSize={1}
-            sectionThickness={1}
-            sectionColor={'#9d4b4b'}
-            fadeDistance={25}
-            fadeStrength={1}
-            infiniteGrid
-          />
+              return renderPattern(
+                position,
+                freqVariation,
+                sigmaVariation,
+                orientVariation,
+                speedVariation,
+                index
+              )
+            })
+          )
         )}
 
-        {backgroundGrid === 'dots' && (
-          <>
-            {Array.from({ length: 50 }).map((_, i) => (
-              <mesh
-                key={`dot-${i}`}
-                position={[
-                  (Math.random() - 0.5) * 20,
-                  (Math.random() - 0.5) * 20,
-                  (Math.random() - 0.5) * 20
-                ]}
-              >
-                <sphereGeometry args={[0.05, 8, 8]} />
-                <meshStandardMaterial color="#888" />
-              </mesh>
-            ))}
-          </>
-        )}
+        {/* 3Dオブジェクトも散りばめる */}
+        {backgroundObject !== 'none' && Array.from({ length: 8 }).map((_, i) => {
+          const x = (Math.random() - 0.5) * 10
+          const y = (Math.random() - 0.5) * 6
+          const z = (Math.random() - 0.5) * 10
+          const scale = 0.5 + Math.random() * 0.5
+          const rotation = [Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI]
 
-        {backgroundGrid === 'lines' && (
-          <>
-            {Array.from({ length: 10 }).map((_, i) => (
-              <mesh
-                key={`line-x-${i}`}
-                position={[0, -2, (i - 5) * 2]}
-                rotation={[0, 0, 0]}
-              >
-                <boxGeometry args={[20, 0.02, 0.02]} />
-                <meshStandardMaterial color="#6f6f6f" />
-              </mesh>
-            ))}
-            {Array.from({ length: 10 }).map((_, i) => (
-              <mesh
-                key={`line-z-${i}`}
-                position={[(i - 5) * 2, -2, 0]}
-                rotation={[0, 0, 0]}
-              >
-                <boxGeometry args={[0.02, 0.02, 20]} />
-                <meshStandardMaterial color="#6f6f6f" />
-              </mesh>
-            ))}
-          </>
-        )}
-
-        {/* 追加オブジェクト（グリッドの上に配置） */}
-        {backgroundObject === 'cube' && (
-          <mesh position={[3, -1, 0]} rotation={[0.5, 0.5, 0]}>
-            <boxGeometry args={[1.5, 1.5, 1.5]} />
-            <meshStandardMaterial color="#4a90e2" wireframe />
-          </mesh>
-        )}
-
-        {backgroundObject === 'sphere' && (
-          <mesh position={[3, -0.8, 0]}>
-            <sphereGeometry args={[1, 32, 32]} />
-            <meshStandardMaterial color="#4a90e2" wireframe />
-          </mesh>
-        )}
-
-        {backgroundObject === 'torus' && (
-          <mesh position={[3, -1, 0]} rotation={[Math.PI / 4, 0, 0]}>
-            <torusGeometry args={[1, 0.4, 16, 32]} />
-            <meshStandardMaterial color="#4a90e2" wireframe />
-          </mesh>
-        )}
-
-        {backgroundObject === 'cylinder' && (
-          <mesh position={[3, -1.2, 0]} rotation={[0, 0, 0]}>
-            <cylinderGeometry args={[0.6, 0.6, 1.8, 32]} />
-            <meshStandardMaterial color="#4a90e2" wireframe />
-          </mesh>
-        )}
-
-        {backgroundObject === 'cone' && (
-          <mesh position={[3, -1.5, 0]} rotation={[0, 0, 0]}>
-            <coneGeometry args={[0.7, 1.8, 32]} />
-            <meshStandardMaterial color="#4a90e2" wireframe />
-          </mesh>
-        )}
-
-        {backgroundObject === 'octahedron' && (
-          <mesh position={[3, -1, 0]}>
-            <octahedronGeometry args={[1]} />
-            <meshStandardMaterial color="#4a90e2" wireframe />
-          </mesh>
-        )}
+          switch(backgroundObject) {
+            case 'cube':
+              return (
+                <mesh key={`obj-${i}`} position={[x, y, z]} rotation={rotation} scale={scale}>
+                  <boxGeometry args={[1, 1, 1]} />
+                  <meshStandardMaterial color="#4a90e2" wireframe />
+                </mesh>
+              )
+            case 'sphere':
+              return (
+                <mesh key={`obj-${i}`} position={[x, y, z]} scale={scale}>
+                  <sphereGeometry args={[0.8, 16, 16]} />
+                  <meshStandardMaterial color="#e24a90" wireframe />
+                </mesh>
+              )
+            case 'torus':
+              return (
+                <mesh key={`obj-${i}`} position={[x, y, z]} rotation={rotation} scale={scale}>
+                  <torusGeometry args={[0.6, 0.25, 12, 24]} />
+                  <meshStandardMaterial color="#90e24a" wireframe />
+                </mesh>
+              )
+            case 'cylinder':
+              return (
+                <mesh key={`obj-${i}`} position={[x, y, z]} rotation={rotation} scale={scale}>
+                  <cylinderGeometry args={[0.4, 0.4, 1.2, 16]} />
+                  <meshStandardMaterial color="#e2904a" wireframe />
+                </mesh>
+              )
+            case 'cone':
+              return (
+                <mesh key={`obj-${i}`} position={[x, y, z]} rotation={rotation} scale={scale}>
+                  <coneGeometry args={[0.5, 1.2, 16]} />
+                  <meshStandardMaterial color="#4ae290" wireframe />
+                </mesh>
+              )
+            case 'octahedron':
+              return (
+                <mesh key={`obj-${i}`} position={[x, y, z]} rotation={rotation} scale={scale}>
+                  <octahedronGeometry args={[0.7]} />
+                  <meshStandardMaterial color="#904ae2" wireframe />
+                </mesh>
+              )
+            default:
+              return null
+          }
+        })}
 
         {/* カメラコントロール */}
         <OrbitControls
