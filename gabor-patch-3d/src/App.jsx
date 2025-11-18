@@ -22,6 +22,10 @@ function App() {
   const [shapeType, setShapeType] = useState('gabor')
   const [viewingDistance, setViewingDistance] = useState(0.3) // 30cm
   const [screenWidthMM, setScreenWidthMM] = useState(340) // 13インチ相当
+  const [backgroundGrid, setBackgroundGrid] = useState('grid') // grid, none, dots, lines
+  const [environmentPreset, setEnvironmentPreset] = useState('city') // city, sunset, dawn, night, studio, etc.
+  const [backgroundObject, setBackgroundObject] = useState('none') // none, cube, sphere, torus, cylinder
+  const [backgroundColor, setBackgroundColor] = useState('#1a1a1a')
 
   // プリセット定義
   const presets = {
@@ -102,7 +106,7 @@ function App() {
   }
 
   return (
-    <div style={{ width: '100vw', height: '100vh', background: '#1a1a1a' }}>
+    <div style={{ width: '100vw', height: '100vh', background: backgroundColor }}>
       {/* トグルボタン */}
       <button
         onClick={() => setPanelVisible(!panelVisible)}
@@ -392,6 +396,114 @@ function App() {
           </button>
         </div>
 
+        {/* 背景設定 */}
+        <div style={{ borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '15px', marginTop: '15px' }}>
+          <h3 style={{ fontSize: '14px', marginBottom: '10px' }}>背景設定</h3>
+
+          <div style={{ marginBottom: '15px' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
+              背景グリッド
+            </label>
+            <select
+              value={backgroundGrid}
+              onChange={(e) => setBackgroundGrid(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '8px',
+                background: '#333',
+                color: 'white',
+                border: '1px solid #666',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                fontSize: '12px'
+              }}
+            >
+              <option value="grid">グリッド</option>
+              <option value="dots">ドット</option>
+              <option value="lines">ライン</option>
+              <option value="none">なし</option>
+            </select>
+          </div>
+
+          <div style={{ marginBottom: '15px' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
+              環境光
+            </label>
+            <select
+              value={environmentPreset}
+              onChange={(e) => setEnvironmentPreset(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '8px',
+                background: '#333',
+                color: 'white',
+                border: '1px solid #666',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                fontSize: '12px'
+              }}
+            >
+              <option value="city">City（都市）</option>
+              <option value="sunset">Sunset（夕焼け）</option>
+              <option value="dawn">Dawn（夜明け）</option>
+              <option value="night">Night（夜）</option>
+              <option value="warehouse">Warehouse（倉庫）</option>
+              <option value="forest">Forest（森）</option>
+              <option value="apartment">Apartment（室内）</option>
+              <option value="studio">Studio（スタジオ）</option>
+              <option value="park">Park（公園）</option>
+              <option value="lobby">Lobby（ロビー）</option>
+            </select>
+          </div>
+
+          <div style={{ marginBottom: '15px' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
+              追加オブジェクト
+            </label>
+            <select
+              value={backgroundObject}
+              onChange={(e) => setBackgroundObject(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '8px',
+                background: '#333',
+                color: 'white',
+                border: '1px solid #666',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                fontSize: '12px'
+              }}
+            >
+              <option value="none">なし</option>
+              <option value="cube">立方体</option>
+              <option value="sphere">球体</option>
+              <option value="torus">トーラス（ドーナツ）</option>
+              <option value="cylinder">円柱</option>
+              <option value="cone">円錐</option>
+              <option value="octahedron">八面体</option>
+            </select>
+          </div>
+
+          <div style={{ marginBottom: '15px' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
+              背景色
+            </label>
+            <input
+              type="color"
+              value={backgroundColor}
+              onChange={(e) => setBackgroundColor(e.target.value)}
+              style={{
+                width: '100%',
+                height: '40px',
+                padding: '0',
+                border: '1px solid #666',
+                borderRadius: '5px',
+                cursor: 'pointer'
+              }}
+            />
+          </div>
+        </div>
+
         <div style={{ fontSize: '11px', marginTop: '20px', opacity: 0.7 }}>
           {stereoEnabled && (
             <p>💡 平行法またはVRビューアーで立体視できます</p>
@@ -418,23 +530,111 @@ function App() {
         {/* 手前にもう一つ配置 */}
         {renderPattern([-1.5, -0.5, 2], frequency * 1.3, sigma * 0.8, orientation - Math.PI / 6, 2.5, 2)}
 
-        {/* グリッド（参照用） */}
-        <Grid
-          args={[10, 10]}
-          position={[0, -2, 0]}
-          cellSize={0.5}
-          cellThickness={0.5}
-          cellColor={'#6f6f6f'}
-          sectionSize={1}
-          sectionThickness={1}
-          sectionColor={'#9d4b4b'}
-          fadeDistance={25}
-          fadeStrength={1}
-          infiniteGrid
-        />
+        {/* 背景グリッド */}
+        {backgroundGrid === 'grid' && (
+          <Grid
+            args={[10, 10]}
+            position={[0, -2, 0]}
+            cellSize={0.5}
+            cellThickness={0.5}
+            cellColor={'#6f6f6f'}
+            sectionSize={1}
+            sectionThickness={1}
+            sectionColor={'#9d4b4b'}
+            fadeDistance={25}
+            fadeStrength={1}
+            infiniteGrid
+          />
+        )}
+
+        {backgroundGrid === 'dots' && (
+          <>
+            {Array.from({ length: 50 }).map((_, i) => (
+              <mesh
+                key={`dot-${i}`}
+                position={[
+                  (Math.random() - 0.5) * 20,
+                  (Math.random() - 0.5) * 20,
+                  (Math.random() - 0.5) * 20
+                ]}
+              >
+                <sphereGeometry args={[0.05, 8, 8]} />
+                <meshStandardMaterial color="#888" />
+              </mesh>
+            ))}
+          </>
+        )}
+
+        {backgroundGrid === 'lines' && (
+          <>
+            {Array.from({ length: 10 }).map((_, i) => (
+              <mesh
+                key={`line-x-${i}`}
+                position={[0, -2, (i - 5) * 2]}
+                rotation={[0, 0, 0]}
+              >
+                <boxGeometry args={[20, 0.02, 0.02]} />
+                <meshStandardMaterial color="#6f6f6f" />
+              </mesh>
+            ))}
+            {Array.from({ length: 10 }).map((_, i) => (
+              <mesh
+                key={`line-z-${i}`}
+                position={[(i - 5) * 2, -2, 0]}
+                rotation={[0, 0, 0]}
+              >
+                <boxGeometry args={[0.02, 0.02, 20]} />
+                <meshStandardMaterial color="#6f6f6f" />
+              </mesh>
+            ))}
+          </>
+        )}
+
+        {/* 追加オブジェクト */}
+        {backgroundObject === 'cube' && (
+          <mesh position={[0, -1, -5]} rotation={[0.5, 0.5, 0]}>
+            <boxGeometry args={[1, 1, 1]} />
+            <meshStandardMaterial color="#4a90e2" wireframe />
+          </mesh>
+        )}
+
+        {backgroundObject === 'sphere' && (
+          <mesh position={[0, -1, -5]}>
+            <sphereGeometry args={[0.8, 32, 32]} />
+            <meshStandardMaterial color="#4a90e2" wireframe />
+          </mesh>
+        )}
+
+        {backgroundObject === 'torus' && (
+          <mesh position={[0, -1, -5]} rotation={[Math.PI / 4, 0, 0]}>
+            <torusGeometry args={[0.8, 0.3, 16, 32]} />
+            <meshStandardMaterial color="#4a90e2" wireframe />
+          </mesh>
+        )}
+
+        {backgroundObject === 'cylinder' && (
+          <mesh position={[0, -1, -5]} rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[0.5, 0.5, 1.5, 32]} />
+            <meshStandardMaterial color="#4a90e2" wireframe />
+          </mesh>
+        )}
+
+        {backgroundObject === 'cone' && (
+          <mesh position={[0, -1, -5]} rotation={[0, 0, 0]}>
+            <coneGeometry args={[0.6, 1.5, 32]} />
+            <meshStandardMaterial color="#4a90e2" wireframe />
+          </mesh>
+        )}
+
+        {backgroundObject === 'octahedron' && (
+          <mesh position={[0, -1, -5]}>
+            <octahedronGeometry args={[0.8]} />
+            <meshStandardMaterial color="#4a90e2" wireframe />
+          </mesh>
+        )}
 
         {/* 環境光 */}
-        <Environment preset="city" />
+        <Environment preset={environmentPreset} />
 
         {/* カメラコントロール */}
         <OrbitControls
