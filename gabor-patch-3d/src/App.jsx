@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { OrbitControls, Environment, Grid } from '@react-three/drei'
+import { OrbitControls, Grid } from '@react-three/drei'
 import GaborPatch from './components/GaborPatch'
 import DotPattern from './components/DotPattern'
 import ConcentricPattern from './components/ConcentricPattern'
@@ -21,11 +21,6 @@ function App() {
     return objects[Math.floor(Math.random() * objects.length)]
   }
 
-  const getRandomEnvironment = () => {
-    const envs = ['city', 'sunset', 'dawn', 'night', 'warehouse', 'forest', 'apartment', 'studio', 'park', 'lobby']
-    return envs[Math.floor(Math.random() * envs.length)]
-  }
-
   const [stereoEnabled, setStereoEnabled] = useState(true)
   const [frequency, setFrequency] = useState(5.0)
   const [sigma, setSigma] = useState(0.3)
@@ -39,7 +34,6 @@ function App() {
   const [viewingDistance, setViewingDistance] = useState(0.3) // 30cm
   const [screenWidthMM, setScreenWidthMM] = useState(340) // 13インチ相当
   const [backgroundGrid, setBackgroundGrid] = useState('grid') // grid, none, dots, lines
-  const [environmentPreset, setEnvironmentPreset] = useState(getRandomEnvironment())
   const [backgroundObject, setBackgroundObject] = useState(getRandomBackgroundObject())
   const [backgroundColor, setBackgroundColor] = useState('#1a1a1a')
 
@@ -457,37 +451,6 @@ function App() {
 
           <div style={{ marginBottom: '15px' }}>
             <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
-              環境光
-            </label>
-            <select
-              value={environmentPreset}
-              onChange={(e) => setEnvironmentPreset(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '8px',
-                background: '#333',
-                color: 'white',
-                border: '1px solid #666',
-                borderRadius: '5px',
-                cursor: 'pointer',
-                fontSize: '12px'
-              }}
-            >
-              <option value="city">City（都市）</option>
-              <option value="sunset">Sunset（夕焼け）</option>
-              <option value="dawn">Dawn（夜明け）</option>
-              <option value="night">Night（夜）</option>
-              <option value="warehouse">Warehouse（倉庫）</option>
-              <option value="forest">Forest（森）</option>
-              <option value="apartment">Apartment（室内）</option>
-              <option value="studio">Studio（スタジオ）</option>
-              <option value="park">Park（公園）</option>
-              <option value="lobby">Lobby（ロビー）</option>
-            </select>
-          </div>
-
-          <div style={{ marginBottom: '15px' }}>
-            <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
               追加オブジェクト
             </label>
             <select
@@ -662,9 +625,6 @@ function App() {
             <meshStandardMaterial color="#4a90e2" wireframe />
           </mesh>
         )}
-
-        {/* 環境光 */}
-        <Environment preset={environmentPreset} />
 
         {/* カメラコントロール */}
         <OrbitControls
