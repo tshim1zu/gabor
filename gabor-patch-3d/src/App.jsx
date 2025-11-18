@@ -19,12 +19,14 @@ function App() {
         top: 20,
         left: 20,
         zIndex: 100,
-        background: 'rgba(0, 0, 0, 0.7)',
+        background: 'rgba(0, 0, 0, 0.95)',
         padding: '20px',
         borderRadius: '10px',
         color: 'white',
         fontFamily: 'monospace',
-        maxWidth: '300px'
+        maxWidth: '300px',
+        border: '2px solid rgba(255, 255, 255, 0.2)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.8)'
       }}>
         <h2 style={{ marginTop: 0, fontSize: '18px' }}>3D Gabor Patch</h2>
         <p style={{ fontSize: '12px', marginBottom: '15px' }}>
