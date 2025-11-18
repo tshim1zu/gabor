@@ -2,6 +2,10 @@ import { useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Environment, Grid } from '@react-three/drei'
 import GaborPatch from './components/GaborPatch'
+import DotPattern from './components/DotPattern'
+import ConcentricPattern from './components/ConcentricPattern'
+import CheckerPattern from './components/CheckerPattern'
+import RadialPattern from './components/RadialPattern'
 import StereoView from './components/StereoView'
 import './App.css'
 
@@ -15,6 +19,7 @@ function App() {
   const [eyeSeparation, setEyeSeparation] = useState(0.064)
   const [exerciseMode, setExerciseMode] = useState(false)
   const [preset, setPreset] = useState('default')
+  const [shapeType, setShapeType] = useState('gabor')
 
   // プリセット定義
   const presets = {
@@ -31,6 +36,59 @@ function App() {
     setSigma(p.sigma)
     setOrientation(p.orientation)
     setPreset(presetName)
+  }
+
+  // パターンコンポーネントを返す関数
+  const renderPattern = (pos, freq, sig, orient, speed) => {
+    const commonProps = {
+      position: pos,
+      animate: animate,
+      exerciseMode: exerciseMode
+    }
+
+    switch (shapeType) {
+      case 'gabor':
+        return (
+          <GaborPatch
+            {...commonProps}
+            frequency={freq}
+            sigma={sig}
+            orientation={orient}
+            animationSpeed={speed}
+          />
+        )
+      case 'dots':
+        return (
+          <DotPattern
+            {...commonProps}
+            dotCount={500}
+            dotSize={0.03}
+          />
+        )
+      case 'concentric':
+        return (
+          <ConcentricPattern
+            {...commonProps}
+            ringCount={10}
+          />
+        )
+      case 'checker':
+        return (
+          <CheckerPattern
+            {...commonProps}
+            gridSize={8}
+          />
+        )
+      case 'radial':
+        return (
+          <RadialPattern
+            {...commonProps}
+            rayCount={16}
+          />
+        )
+      default:
+        return null
+    }
   }
 
   return (
@@ -145,6 +203,32 @@ function App() {
 
         <div style={{ marginBottom: '15px' }}>
           <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
+            図形タイプ
+          </label>
+          <select
+            value={shapeType}
+            onChange={(e) => setShapeType(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '8px',
+              background: '#333',
+              color: 'white',
+              border: '1px solid #666',
+              borderRadius: '5px',
+              cursor: 'pointer',
+              fontSize: '12px'
+            }}
+          >
+            <option value="gabor">ガボールパッチ（縞模様）</option>
+            <option value="dots">ランダムドット</option>
+            <option value="concentric">同心円</option>
+            <option value="checker">チェッカーボード</option>
+            <option value="radial">放射状</option>
+          </select>
+        </div>
+
+        <div style={{ marginBottom: '15px' }}>
+          <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px' }}>
             パターンプリセット
           </label>
           <select
@@ -249,38 +333,14 @@ function App() {
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 10, 10]} intensity={1} />
 
-        {/* ガボールパッチ（複数配置して奥行き感を出す） */}
-        <GaborPatch
-          position={[0, 0, 0]}
-          frequency={frequency}
-          sigma={sigma}
-          orientation={orientation}
-          animate={animate}
-          animationSpeed={2.0}
-          exerciseMode={exerciseMode}
-        />
+        {/* パターン（複数配置して奥行き感を出す） */}
+        {renderPattern([0, 0, 0], frequency, sigma, orientation, 2.0)}
 
         {/* 奥にもう一つ配置 */}
-        <GaborPatch
-          position={[1.5, 0.5, -2]}
-          frequency={frequency * 0.7}
-          sigma={sigma * 1.2}
-          orientation={orientation + Math.PI / 4}
-          animate={animate}
-          animationSpeed={1.5}
-          exerciseMode={exerciseMode}
-        />
+        {renderPattern([1.5, 0.5, -2], frequency * 0.7, sigma * 1.2, orientation + Math.PI / 4, 1.5)}
 
         {/* 手前にもう一つ配置 */}
-        <GaborPatch
-          position={[-1.5, -0.5, 2]}
-          frequency={frequency * 1.3}
-          sigma={sigma * 0.8}
-          orientation={orientation - Math.PI / 6}
-          animate={animate}
-          animationSpeed={2.5}
-          exerciseMode={exerciseMode}
-        />
+        {renderPattern([-1.5, -0.5, 2], frequency * 1.3, sigma * 0.8, orientation - Math.PI / 6, 2.5)}
 
         {/* グリッド（参照用） */}
         <Grid
